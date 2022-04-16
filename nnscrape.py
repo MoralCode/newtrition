@@ -5,3 +5,7 @@ import requests
 
 NN_BASE_URL = "https://www.rit.edu/fa/diningservices/netnutrition/1"
 # https://www.rit.edu/fa/diningservices/netnutrition/1/NutritionDetail/ShowItemNutritionLabel
+
+session = requests.Session() 
+
+homepage = session.get(NN_BASE_URL)
