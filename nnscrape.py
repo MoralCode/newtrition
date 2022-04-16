@@ -19,3 +19,5 @@ homepage = session.get(NN_BASE_URL)
 
 with open(COOKIES_FILE, 'wb') as c:
 	pickle.dump(session.cookies, c)
+
+home_html = BeautifulSoup(homepage.content, 'html.parser') 
