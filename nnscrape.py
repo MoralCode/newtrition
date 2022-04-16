@@ -21,3 +21,6 @@ with open(COOKIES_FILE, 'wb') as c:
 	pickle.dump(session.cookies, c)
 
 home_html = BeautifulSoup(homepage.content, 'html.parser') 
+
+dining_locations_html = home_html.find(id="cbo_nn_unitDataList").find(class_="row").children
+dining_locations = [DiningLocation.from_html(loc) for loc in dining_locations_html]
