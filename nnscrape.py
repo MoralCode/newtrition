@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import requests
+import requests_cache
 import pickle
 from pathlib import Path
 from netnutrition import DiningLocation
@@ -8,7 +8,7 @@ COOKIES_FILE = "cookies.txt"
 NN_BASE_URL = "https://www.rit.edu/fa/diningservices/netnutrition/1"
 # https://www.rit.edu/fa/diningservices/netnutrition/1/NutritionDetail/ShowItemNutritionLabel
 
-session = requests.Session() 
+session = requests_cache.CachedSession('nn_pagecache')
 if Path(COOKIES_FILE).exists():
 	with open(COOKIES_FILE, 'rb') as c:
 		# contents = c.read()
