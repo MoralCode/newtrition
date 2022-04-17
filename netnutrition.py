@@ -229,7 +229,7 @@ class DiningMenuItem:
 			# label disclaimer
 			currentrow += 1
 		except Exception as e:
-			print("an error occurred while looking for nutrition facts for menuitem {}: ".format(self.identifier) + str(e))
+			print("an error occurred while looking for nutrition facts for menuitem {}: ".format(self.item_id) + str(e))
 
 		# ingredients
 		currentrow += 1
@@ -238,7 +238,7 @@ class DiningMenuItem:
 			ingredients = data[currentrow].find(class_="cbo_nn_LabelIngredients").string
 			ingredients = ingredient_split(ingredients, ",")
 		except Exception as e:
-			print("an error occurred while looking for ingredients for menuitem {}: ".format(self.identifier) + str(e))
+			print("an error occurred while looking for ingredients for menuitem {}: ".format(self.item_id) + str(e))
 		
 
 		# allergens
@@ -248,7 +248,7 @@ class DiningMenuItem:
 			allergens = data[currentrow].find(class_="cbo_nn_LabelAllergens").string.split(",")
 			allergens = [clean_value(a) for a in allergens]
 		except Exception as e:
-			print("an error occurred while looking for allergens for menuitem {}: ".format(self.identifier) + str(e))
+			print("an error occurred while looking for allergens for menuitem {}: ".format(self.item_id) + str(e))
 
 		self._nutrition = NutritionLabel(servinginfo, nutritionfacts, ingredients, allergens)
 		return self._nutrition
