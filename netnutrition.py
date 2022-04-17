@@ -143,11 +143,13 @@ class DiningMenuItem:
         mapper_registry.metadata,
         Column("item_id", Integer, primary_key=True),
         Column("menu_id", Integer, ForeignKey("dining_menu.menu_id")),
+		Column("nutrition_label_id", Integer, ForeignKey("nutrition_label.nutrition_label_id")),
         Column("name", String(256)),
     )
 	name:str
 	item_id:int
 	menu_id:int
+	nutrition_label_id:int
 
 	def __init__(self, name, identifier):
 		self.name = name
@@ -262,6 +264,13 @@ class DiningMenuItem:
 		if for_menu is not None:
 			ins.menu = for_menu
 		return ins
+
+	__mapper_args__ = {   # type: ignore
+        "properties" : {
+			# "location": relationship("DiningLocation", back_populates="menus"),
+            "label": relationship("NutritionLabel", back_populates="item")
+        }
+    }
 
 
 @dataclass
