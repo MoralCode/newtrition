@@ -89,11 +89,11 @@ class DiningMenu:
 
 @dataclass
 class DiningMenuItem:
-	date:str
+	name:str
 	identifier:int
 
-	def __init__(self, date, identifier):
-		self.date = date
+	def __init__(self, name, identifier):
+		self.name = name
 		self.identifier = identifier
 		self._menu = None
 
@@ -107,10 +107,10 @@ class DiningMenuItem:
 
 	@classmethod
 	def from_html(cls, html, for_menu=None):
-		title = html.find(class_="card-title")
-		date = title.string
-		identifier = grab_id_from_parens(html.find(class_="cbo_nn_menuLink")["onclick"])
-		ins = cls(date, identifier)
+		item = html.find(class_="cbo_nn_itemHover")
+		name = next(item.children)
+		identifier = grab_id_from_parens(item["onclick"])
+		ins = cls(name, identifier)
 		if for_menu is not None:
 			ins.menu = for_menu
 		return ins
