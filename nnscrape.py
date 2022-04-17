@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import requests_cache
+import requests
 import pickle
 from pathlib import Path
 from netnutrition import DiningLocation, DiningMenu
@@ -7,7 +7,7 @@ from constants import NN_BASE_URL, COOKIES_FILE
 
 
 # this will need to be put back once this goes live as every POST request needs to hit NN to work
-session = requests_cache.CachedSession('nn_pagecache')#, allowable_methods=['GET'])
+session = session = requests.Session() #, allowable_methods=['GET'])
 if Path(COOKIES_FILE).exists():
 	with open(COOKIES_FILE, 'rb') as c:
 		# contents = c.read()
