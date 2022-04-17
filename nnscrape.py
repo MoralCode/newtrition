@@ -97,9 +97,20 @@ if __name__ == '__main__':
 
 		with Session(engine) as dbsession:
 			for dining_location in dining_locations:
-				location = dbsession.query(DiningLocation).get(dining_location.location_id)
-				if location is None:
-					dbsession.add(dining_location)
-					dbsession.commit()
-				# else:
-				# 	print("location exists: " + str(dining_location.location_id))
+				menus = dining_location.get_menus(session = session)
+				for menu in menus:
+					# get_or_create(dbsession, DiningMenu, menu.menu_id, menu, debug=args.debug)
+					items = menu.get_items(session=session)
+					for item in items:
+						print("processing loc: {}, menu: {}, item: {}".format(dining_location.location_id, menu.menu_id, item.item_id))
+
+						nut = item.get_nutrition_info(session=session)
+						print(nut)
+						nut.ingredients = list(set([find_or_create(dbsession, Ingredient, Ingredient(None, i), debug=args.debug, name=i) for i in nut.ingredients_list]))
+						nut.allergens = list(set([find_or_create(dbsession, Allergen, Allergen(None, i), debug=args.debug, name=i) for i in nut.allergen_list]))
+
+						get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug)
+					# reset state for the next menu
+					goback(session=session)
+				# reset state for the next location
+				goback(session=session)
