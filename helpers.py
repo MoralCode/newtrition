@@ -49,13 +49,14 @@ def goback(session = requests):
 		headers=JSON_HEADERS)
 
 # based on https://stackoverflow.com/a/6078058/
-def get_or_create(dbsession, model, identifier, fetched_object, debug = False):
+def get_or_create(dbsession, model, identifier, fetched_object, debug = False, batched = False):
 	instance = dbsession.query(model).get(identifier)
 	if debug:
 		print("retrieved instance:" + str(instance))
 	if instance is None:
 		dbsession.add(fetched_object)
-		dbsession.commit()
+		if not batched:
+			dbsession.commit()
 		if debug:
 			print("added {} with id {} to db".format(model.__name__, identifier))
 	elif debug:
@@ -63,13 +64,14 @@ def get_or_create(dbsession, model, identifier, fetched_object, debug = False):
 
 
 	
-def find_or_create(dbsession, model, fetched_object, debug = False, **kwargs):
+def find_or_create(dbsession, model, fetched_object, debug = False, batched = False, **kwargs):
 	instance = dbsession.query(model).filter_by(**kwargs).first()
 	if debug:
 		print("retrieved instance::" + str(instance))
 	if instance is None:
 		dbsession.add(fetched_object)
-		dbsession.commit()
+		if not batched:
+			dbsession.commit()
 		if debug:
 			print("added {} to db".format(fetched_object))
 		return fetched_object

@@ -4,7 +4,7 @@ import requests_cache
 import pickle
 from pathlib import Path
 from netnutrition import DiningLocation, DiningMenu, DiningMenuItem, NutritionLabel, Ingredient, Allergen
-from constants import NN_BASE_URL, COOKIES_FILE
+from constants import NN_BASE_URL, COOKIES_FILE, PROCESSING_BATCH_SIZE
 from helpers import goback, find_or_create, get_or_create
 import csv
 import argparse
@@ -103,30 +103,40 @@ if __name__ == '__main__':
 			alembic_cfg = Config("./alembic.ini")
 			command.stamp(alembic_cfg, "head")
 
+		batched = PROCESSING_BATCH_SIZE > 0
+
 		with Session(engine) as dbsession:
 			for dining_location in dining_locations:
 				menus = dining_location.get_menus(session = session)
 				for menu in menus:
 					# get_or_create(dbsession, DiningMenu, menu.menu_id, menu, debug=args.debug)
 					items = menu.get_items(session=session)
+					items_processed = 0
 					for item in items:
 						print("checking loc: {}, menu: {}, item: {}".format(dining_location.location_id, menu.menu_id, item.item_id))
 						db_item = dbsession.query(DiningMenuItem).get(item.item_id)
 						if db_item is None or db_item.nutrition_label == []:
+							if items_processed >= PROCESSING_BATCH_SIZE and batched:
+								dbsession.commit()
 							nut = item.get_nutrition_info(session=session)
-							get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug)
+							get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug, batched=batched)
 							# print(nut)
 							# if nut.ingredients_list:
 							# 	nut.ingredients = [find_or_create(dbsession, Ingredient, Ingredient(None, i), debug=args.debug, name=i) for i in nut.ingredients_list]
 							# if nut.allergen_list:
 							# 	nut.allergens = [find_or_create(dbsession, Allergen, Allergen(None, i), debug=args.debug, name=i) for i in nut.allergen_list]
 							try:
-								get_or_create(dbsession, DiningMenuItem, item.item_id, item, debug=args.debug)
+								get_or_create(dbsession, DiningMenuItem, item.item_id, item, debug=args.debug, batched=batched)
 							except Exception as e:
 								print(e)
 								print(nut)
 								# print(nut.ingredients_list)
 								raise e
+						
+							items_processed += 1
+					if items_processed > 0:
+						items_processed = 0
+						dbsession.commit()
  					# reset state for the next menu
 					goback(session=session)
 				# reset state for the next location
