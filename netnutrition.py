@@ -372,3 +372,47 @@ class NutritionLabel:
 		self.cals_per_serving = serving.calsperserving
 
 		# what about ingredients and allergens?
+
+
+@mapper_registry.mapped
+@dataclass
+class Ingredient:
+	__table__ = Table(
+        "ingredients",
+        mapper_registry.metadata,
+        Column("ingredient_id", Integer, primary_key=True, autoincrement=True),
+        Column("name", String(256)),
+		UniqueConstraint("name")
+    )
+	ingredient_id:int
+	name:str
+
+
+
+@mapper_registry.mapped
+@dataclass
+class Allergen:
+	__table__ = Table(
+        "allergens",
+        mapper_registry.metadata,
+        Column("allergen_id", Integer, primary_key=True, autoincrement=True),
+        Column("name", String(256)),
+		UniqueConstraint("name")
+    )
+	allergen_id:int
+	name:str
+
+
+
+@mapper_registry.mapped
+@dataclass
+class ItemLabel:
+	__table__ = Table(
+        "labels",
+        mapper_registry.metadata,
+        Column("label_id", Integer, primary_key=True, autoincrement=True),
+        Column("name", String(256)),
+		UniqueConstraint("name")
+    )
+	label_id:int
+	name:str
