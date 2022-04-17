@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from helpers import grab_id_from_parens, html_from_json_panel
+from helpers import grab_id_from_parens, html_from_json_panel, extract_nutrition_info, clean_value
 from dataclasses import dataclass
 from constants import NN_BASE_URL, JSON_HEADERS
 import requests
@@ -96,14 +96,81 @@ class DiningMenuItem:
 		self.name = name
 		self.identifier = identifier
 		self._menu = None
+		self._nutrition = None
 
 	@property
-	def menu(self):
-		return self._menu
+	def nutrition(self):
+		return self._nutrition
 	
-	@menu.setter
-	def menu(self, val):
-		self._menu = val
+	@nutrition.setter
+	def nutrition(self, val):
+		self._nutrition = val
+
+	def get_nutrition_info(self, session=requests):
+		if self._nutrition is not None:
+			return self._nutrition
+		
+		nutrition_response = session.post(
+			NN_BASE_URL + "/NutritionDetail/ShowItemNutritionLabel",
+			data="detailOid=" + str(self.identifier),
+			headers=JSON_HEADERS)
+		nutrition_html = BeautifulSoup(nutrition_response.content, 'html.parser') 
+		data = list(nutrition_html.find("table").children)
+		
+		#ignore the forst two rows: name and "nutrition information" heading
+		currentrow = 2
+		
+		#servings per container
+		serv = data[currentrow].find(class_="cbo_nn_LabelBottomBorderLabel")
+		spc = list(serv.children)[0].string.split("\xa0")[0]
+		servsize = serv.find(class_="inline-div-right").string
+
+		# cals per serving
+		currentrow += 1
+		cals = int(data[currentrow].find(class_="inline-div-right").string)
+
+		servinginfo = Serving(int(spc), clean_value(servsize), cals)
+
+
+		# % dv heading, skip this
+		currentrow += 1
+
+		# Total fat
+		currentrow += 1
+		total_fat = extract_nutrition_info(data[currentrow])
+		# saturated fat
+		currentrow += 1
+		saturated_fat = extract_nutrition_info(data[currentrow])
+		# trans fat
+		currentrow += 1
+		trans_fat = extract_nutrition_info(data[currentrow])
+		#Cholesterol
+		currentrow += 1
+		cholesterol = extract_nutrition_info(data[currentrow])
+		# Sodium
+		currentrow += 1
+		sodium = extract_nutrition_info(data[currentrow])
+		# Total Carbohydrate
+		currentrow += 1
+		total_carbohydrate = extract_nutrition_info(data[currentrow])
+		# Dietary Fiber
+		currentrow += 1
+		fiber = extract_nutrition_info(data[currentrow])
+		# Total Sugars
+		currentrow += 1
+		total_sugars = extract_nutrition_info(data[currentrow])
+		# Protein
+		currentrow += 1
+		protein = extract_nutrition_info(data[currentrow])
+
+		nutritionfacts = NutritionFacts(total_fat, saturated_fat, trans_fat, cholesterol, sodium, total_carbohydrate, fiber, total_sugars, protein)
+		ingredients = []
+		allergens = []
+
+
+
+		self._nutrition = NutritionLabel(servinginfo, nutritionfacts, ingredients, allergens)
+		return self._nutrition
 
 	@classmethod
 	def from_html(cls, html, for_menu=None):
@@ -114,3 +181,30 @@ class DiningMenuItem:
 		if for_menu is not None:
 			ins.menu = for_menu
 		return ins
+
+
+@dataclass
+class Serving:
+	servingspercontainer:int
+	servingsize:str
+	calsperserving:int
+
+@dataclass
+class NutritionFacts:
+	# a series of tuples representing content and %dv
+	total_fat: (str, str)
+	saturated_fat: (str, str)
+	trans_fat: (str, str)
+	cholesterol: (str, str)
+	sodium: (str, str)
+	total_carbohydrate: (str, str)
+	fiber: (str, str)
+	total_sugars: (str, str)
+	protein: (str, str)
+
+@dataclass
+class NutritionLabel:
+	serving:Serving
+	nutritionfacts:NutritionFacts
+	ingredients:list
+	allergens:list
