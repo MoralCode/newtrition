@@ -15,6 +15,8 @@ parser.add_argument('mode', choices=['test', 'csv', 'archive'],
                     help='pick a mode')
 parser.add_argument('--cached', action='store_true',
                     help='whether caching should be used')
+parser.add_argument('--show-cookies', action='store_true',
+                    help='whether to print the session id in the cookies')
 args = parser.parse_args()
 
 
@@ -37,6 +39,12 @@ with open(COOKIES_FILE, 'wb') as c:
 	pickle.dump(session.cookies, c)
 
 home_html = BeautifulSoup(homepage.content, 'html.parser') 
+
+if args.show_cookies:
+# Get cookies
+	print(session.cookies.get_dict())
+
+
 if args.mode == "csv":
 	item_ids = set()
 
