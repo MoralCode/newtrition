@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from helpers import grab_id_from_parens
 from dataclasses import dataclass
-from constants import NN_BASE_URL
+from constants import NN_BASE_URL, JSON_HEADERS
 import requests
 class NetNutrition:
 	"""A class representing the net nutrition API and keeping track of the current state?
@@ -18,15 +18,10 @@ class DiningLocation:
 		if self._menus is not None:
 			return self.menus
 		
-		menus_url = NN_BASE_URL + "/Unit/SelectUnitFromUnitsList"
-		menu_data = "unitOid=" + str(self.identifier)
-		menu_headers = {
-			"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-			# "Accept": "*/*",
-			"Referer": NN_BASE_URL
-		}
-
-		menu_response = session.post(menus_url, data=menu_data, headers=menu_headers)
+		menu_response = session.post(
+			NN_BASE_URL + "/Unit/SelectUnitFromUnitsList",
+			data="unitOid=" + str(self.identifier),
+			headers=JSON_HEADERS)
 		menu_panels = menu_response.json().get("panels")
 		menu_panel = next((x for x in menu_panels if x.get("id") == "menuPanel"), None)
 		if not menu_panel:
