@@ -236,6 +236,7 @@ class DiningMenuItem:
 		ingredients = []
 		try:
 			ingredients = data[currentrow].find(class_="cbo_nn_LabelIngredients").string
+			ingredients = clean_value(ingredients)
 			# ingredients = ingredient_split(ingredients, ",")
 		except Exception as e:
 			print("an error occurred while looking for ingredients for menuitem {}: ".format(self.item_id) + str(e))
@@ -246,6 +247,7 @@ class DiningMenuItem:
 		allergens = []
 		try:
 			allergens = data[currentrow].find(class_="cbo_nn_LabelAllergens").string#.split(",")
+			allergens = clean_value(allergens)
 			# allergens = [clean_value(a) for a in allergens]
 		except Exception as e:
 			print("an error occurred while looking for allergens for menuitem {}: ".format(self.item_id) + str(e))
