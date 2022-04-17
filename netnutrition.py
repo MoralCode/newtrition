@@ -293,7 +293,7 @@ class NutritionLabel:
 	__table__ = Table(
         "nutrition_label",
         mapper_registry.metadata,
-        Column("label_id", Integer, primary_key=True),
+        Column("nutrition_label_id", Integer, primary_key=True),
         Column("item_id", Integer, ForeignKey("dining_menu_item.item_id")),
 		Column("servings_per_container", Integer),
         Column("cals_per_serving", Integer, ForeignKey("dining_menu_item.item_id")),
@@ -318,7 +318,7 @@ class NutritionLabel:
 		Column("protein_amt", String(32)),
 		Column("protein_dv", String(32)),
     )
-	label_id:int
+	nutrition_label_id:int
 	item_id:int
 
 	servings_per_container:int
