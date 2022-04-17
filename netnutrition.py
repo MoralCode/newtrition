@@ -295,7 +295,19 @@ class NutritionFacts:
 	fiber: (str, str)
 	total_sugars: (str, str)
 	protein: (str, str)
+	
+	
+label_ingredients = Table('label_ingredients', mapper_registry.metadata,
+    Column('label_id', ForeignKey('nutrition_label.nutrition_label_id'), primary_key=True),
+    Column('ingredient_id', ForeignKey('ingredients.ingredient_id'), primary_key=True)
+)
 
+label_allergens = Table('label_allergens', mapper_registry.metadata,
+    Column('label_id', ForeignKey('nutrition_label.nutrition_label_id'), primary_key=True),
+    Column('ingredient_id', ForeignKey('allergens.allergen_id'), primary_key=True)
+)
+
+		
 @mapper_registry.mapped
 @dataclass
 class NutritionLabel:
@@ -353,8 +365,6 @@ class NutritionLabel:
 	protein_amt: str
 	protein_dv: str
 	#TODO: make me into separate tables to dedup
-	ingredients:list
-	allergens:list
 
 	def __init__(self, serving: Serving, nutritionfacts:NutritionFacts, ingredients:list, allergens:list):
 		self.total_fat_amt = nutritionfacts.total_fat[0]
@@ -413,7 +423,10 @@ class Allergen:
 	allergen_id:int
 	name:str
 
-
+# item_labels = Table('label_ingredients', mapper_registry.metadata,
+#     Column('left_id', ForeignKey('left.id')),
+#     Column('right_id', ForeignKey('right.id'))
+# )
 
 @mapper_registry.mapped
 @dataclass
