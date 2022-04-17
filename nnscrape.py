@@ -9,6 +9,10 @@ from helpers import goback
 import csv
 import argparse
 
+from database import engine
+from sqlalchemy.orm import Session
+from sqlalchemy import MetaData
+from netnutrition import mapper_registry
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('mode', choices=['test', 'csv', 'archive'],
@@ -17,6 +21,8 @@ parser.add_argument('--cached', action='store_true',
                     help='whether caching should be used')
 parser.add_argument('--show-cookies', action='store_true',
                     help='whether to print the session id in the cookies')
+parser.add_argument('--createdb', action='store_true',
+                    help='whether to create a new DB')
 args = parser.parse_args()
 
 
@@ -82,3 +88,12 @@ elif args.mode == "test":
 	print(an_item)
 	print(an_item.get_nutrition_info(session=session))
 
+
+elif args.mode == "archive":
+	if args.createdb:
+		mapper_registry.metadata.create_all(engine)
+
+
+	with Session(engine) as session:
+		session.add_all(dining_locations)
+		session.commit()
