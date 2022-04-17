@@ -3,6 +3,8 @@ from helpers import grab_id_from_parens, html_from_json_panel, extract_nutrition
 from dataclasses import dataclass
 from constants import NN_BASE_URL, JSON_HEADERS
 import requests
+import datetime
+from dateutil.parser import parse
 class NetNutrition:
 	"""A class representing the net nutrition API and keeping track of the current state?
 	"""
@@ -43,11 +45,11 @@ class DiningLocation:
 
 @dataclass
 class DiningMenu:
-	date:str
+	date:datetime.datetime
 	identifier:int
 
 	def __init__(self, date, identifier):
-		self.date = date
+		self.date = parse(date)
 		self.identifier = identifier
 		self._location = None
 		self._items = None
