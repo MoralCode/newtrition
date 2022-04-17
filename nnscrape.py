@@ -80,8 +80,9 @@ if __name__ == '__main__':
 					if db_item is None or db_item.nutrition_label == []:
 						if items_processed >= PROCESSING_BATCH_SIZE and batched:
 							dbsession.commit()
-						nut = item.get_nutrition_info(session=session)
-						get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug, batched=batched)
+						if db_item.nutrition_label == []:
+							nut = item.get_nutrition_info(session=session)
+							get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug, batched=batched)
 						# print(nut)
 						if nut.label_names:
 							nut.labels = [find_or_create(dbsession, ItemLabel, ItemLabel(None, i), debug=args.debug, name=i) for i in nut.label_names]
