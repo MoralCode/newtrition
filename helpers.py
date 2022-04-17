@@ -28,9 +28,9 @@ def ingredient_split(string, delimiter):
 	last_cut = 0
 	current_paren_level = 0
 	for i in range(len(string)):
-		if string[i] == "(":
+		if string[i] in ["(", "[", "<", "{"]:
 			current_paren_level += 1
-		elif string[i] == ")":
+		elif string[i] in [")", "]", ">", "}"]:
 			current_paren_level -= 1
 		if (string[i] == delimiter) and current_paren_level <= 0:
 			items.append(clean_value(string[last_cut:i]))
