@@ -5,10 +5,6 @@ from constants import NN_BASE_URL, JSON_HEADERS
 import requests
 import datetime
 from dateutil.parser import parse
-class NetNutrition:
-	"""A class representing the net nutrition API and keeping track of the current state?
-	"""
-	pass
 
 
 @dataclass
