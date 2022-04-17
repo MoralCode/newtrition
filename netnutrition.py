@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from helpers import grab_id_from_parens
+from helpers import grab_id_from_parens, html_from_json_panel
 from dataclasses import dataclass
 from constants import NN_BASE_URL, JSON_HEADERS
 import requests
@@ -22,11 +22,7 @@ class DiningLocation:
 			NN_BASE_URL + "/Unit/SelectUnitFromUnitsList",
 			data="unitOid=" + str(self.identifier),
 			headers=JSON_HEADERS)
-		menu_panels = menu_response.json().get("panels")
-		menu_panel = next((x for x in menu_panels if x.get("id") == "menuPanel"), None)
-		if not menu_panel:
-			print("cannot find menu html")
-		menu_html = menu_panel.get("html")
+		menu_html = html_from_json_panel(menu_response.json(),"menuPanel")
 		menu_list_html = BeautifulSoup(menu_html, 'html.parser') 
 		menu_list_items = menu_list_html.find(id="cbo_nn_menuDataList").find(class_="row").children
 		self._menus = [DiningMenu.from_html(html, for_location=self) for html in menu_list_items]
