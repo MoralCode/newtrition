@@ -381,6 +381,8 @@ class NutritionLabel:
 		self.cals_per_serving = serving.calsperserving
 
 		# what about ingredients and allergens?
+		self.ingredients = [Ingredient(None, i) for i in ingredients]
+		self.allergens = [Allergen(None, i) for i in allergens]
 
 
 @mapper_registry.mapped
