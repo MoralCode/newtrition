@@ -24,6 +24,8 @@ if __name__ == '__main__':
 						help='whether to print the session id in the cookies')
 	parser.add_argument('--createdb', action='store_true',
 						help='whether to create a new DB')
+	parser.add_argument('--debug', action='store_true',
+						help='print debugging output')
 	args = parser.parse_args()
 
 
