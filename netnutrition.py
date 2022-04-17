@@ -19,7 +19,7 @@ class DiningLocation:
 			return self.menus
 		
 		menus_url = NN_BASE_URL + "/Unit/SelectUnitFromUnitsList"
-		menu_data = "unitOid=" + str(artesanos.identifier)
+		menu_data = "unitOid=" + str(self.identifier)
 		menu_headers = {
 			"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
 			# "Accept": "*/*",
@@ -44,9 +44,11 @@ class DiningLocation:
 		identifier = grab_id_from_parens(link["onclick"])
 		return cls(name, identifier)
 
-	# def __init__(self, name, identifier):
-	# 	self.name = name
-	# 	self.id = identifier
+	def __init__(self, name, identifier):
+		self.name = name
+		self.identifier = identifier
+		self._menus = None
+
 
 @dataclass
 class DiningMenu:
