@@ -264,7 +264,7 @@ class DiningMenuItem:
 		name = next(item.children)
 		identifier = grab_id_from_parens(item["onclick"])
 		ins = cls(name, identifier)
-		self.label_names = [l.get("title") for l in item.find_all("img")]
+		ins.label_names = [l.get("title") for l in item.find_all("img")]
 		if for_menu is not None:
 			ins.menu_id = for_menu.menu_id
 		return ins
