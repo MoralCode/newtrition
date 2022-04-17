@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from helpers import grab_id_from_parens
 from dataclasses import dataclass
 from constants import NN_BASE_URL
+import requests
 class NetNutrition:
 	"""A class representing the net nutrition API and keeping track of the current state?
 	"""
@@ -13,8 +14,7 @@ class DiningLocation:
 	name:str
 	identifier: int
 
-	@property
-	def menus(self):
+	def get_menus(self, session=requests):
 		if self._menus is not None:
 			return self.menus
 		
