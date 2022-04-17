@@ -268,7 +268,7 @@ class DiningMenuItem:
 	__mapper_args__ = {   # type: ignore
         "properties" : {
 			# "location": relationship("DiningLocation", back_populates="menus"),
-            "nutrition_label": relationship("NutritionLabel")
+            "nutrition_label": relationship("NutritionLabel", uselist=False)
         }
     }
 
