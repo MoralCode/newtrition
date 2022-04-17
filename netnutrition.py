@@ -266,12 +266,16 @@ class DiningMenuItem:
 
 @dataclass
 class Serving:
+	"""a convenience class to make it easier to create a nutrition label
+	"""
 	servingspercontainer:int
 	servingsize:str
 	calsperserving:int
 
 @dataclass
 class NutritionFacts:
+	"""a convenience class to make it easier to create a nutrition label
+	"""
 	# a series of tuples representing content and %dv
 	total_fat: (str, str)
 	saturated_fat: (str, str)
@@ -283,9 +287,88 @@ class NutritionFacts:
 	total_sugars: (str, str)
 	protein: (str, str)
 
+@mapper_registry.mapped
 @dataclass
 class NutritionLabel:
-	serving:Serving
-	nutritionfacts:NutritionFacts
+	__table__ = Table(
+        "nutrition_label",
+        mapper_registry.metadata,
+        Column("label_id", Integer, primary_key=True),
+        Column("item_id", Integer, ForeignKey("dining_menu_item.item_id")),
+		Column("servings_per_container", Integer),
+        Column("cals_per_serving", Integer, ForeignKey("dining_menu_item.item_id")),
+        Column("serving_size", String(32)),
+
+        Column("total_fat_amt", String(32)),
+		Column("total_fat_dv", String(32)),
+		Column("saturated_fat_amt", String(32)),
+		Column("saturated_fat_dv", String(32)),
+		Column("trans_fat_amt", String(32)),
+		Column("trans_fat_dv", String(32)),
+		Column("cholesterol_amt", String(32)),
+		Column("cholesterol_dv", String(32)),
+		Column("sodium_amt", String(32)),
+		Column("sodium_dv", String(32)),
+		Column("total_carbohydrate_amt", String(32)),
+		Column("total_carbohydrate_dv", String(32)),
+		Column("fiber_amt", String(32)),
+		Column("fiber_dv", String(32)),
+		Column("total_sugars_amt", String(32)),
+		Column("total_sugars_dv", String(32)),
+		Column("protein_amt", String(32)),
+		Column("protein_dv", String(32)),
+    )
+	label_id:int
+	item_id:int
+
+	servings_per_container:int
+	serving_size:str
+	cals_per_serving:int
+
+	total_fat_amt: str
+	total_fat_dv: str
+	saturated_fat_amt: str
+	saturated_fat_dv: str
+	trans_fat_amt: str
+	trans_fat_dv: str
+	cholesterol_amt: str
+	cholesterol_dv: str
+	sodium_amt: str
+	sodium_dv: str
+	total_carbohydrate_amt: str
+	total_carbohydrate_dv: str
+	fiber_amt: str
+	fiber_dv: str
+	total_sugars_amt: str
+	total_sugars_dv: str
+	protein_amt: str
+	protein_dv: str
+	#TODO: make me into separate tables to dedup
 	ingredients:list
 	allergens:list
+
+	def __init__(self, serving: Serving, nutritionfacts:NutritionFacts, ingredients:list, allergens:List):
+		self.total_fat_amt = nutritionfacts.total_fat[0]
+		self.total_fat_dv = nutritionfacts.total_fat[1]
+		self.saturated_fat_amt = nutritionfacts.saturated_fat[0]
+		self.saturated_fat_dv = nutritionfacts.saturated_fat[1]
+		self.trans_fat_amt = nutritionfacts.trans_fat[0]
+		self.trans_fat_dv = nutritionfacts.trans_fat[1]
+		self.cholesterol_amt = nutritionfacts.cholesterol[0]
+		self.cholesterol_dv = nutritionfacts.cholesterol[1]
+		self.sodium_amt = nutritionfacts.sodium[0]
+		self.sodium_dv = nutritionfacts.sodium[1]
+		self.total_carbohydrate_amt = nutritionfacts.total_carbohydrate[0]
+		self.total_carbohydrate_dv = nutritionfacts.total_carbohydrate[1]
+		self.fiber_amt = nutritionfacts.fiber[0]
+		self.fiber_dv = nutritionfacts.fiber[1]
+		self.total_sugars_amt = nutritionfacts.total_sugars[0]
+		self.total_sugars_dv = nutritionfacts.total_sugars[1]
+		self.protein_amt = nutritionfacts.protein[0]
+		self.protein_dv = nutritionfacts.protein[1]
+		
+		self.servings_per_container = serving.servingspercontainer
+		self.serving_size = serving.servingsize
+		self.cals_per_serving = serving.calsperserving
+
+		# what about ingredients and allergens?
