@@ -17,7 +17,7 @@ from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String, Date
-from sqlalchemy import Table
+from sqlalchemy import Table, UniqueConstraint
 from sqlalchemy.orm import registry
 from sqlalchemy.orm import relationship
 
