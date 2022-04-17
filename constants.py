@@ -8,5 +8,6 @@ PROCESSING_BATCH_SIZE = 25
 
 JSON_HEADERS = {
 	"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-	"Referer": NN_BASE_URL
+	"Referer": NN_BASE_URL,
+	"User-Agent": "Newtrition bot https://github.com/MoralCode/newtrition"
 }
