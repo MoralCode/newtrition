@@ -356,7 +356,7 @@ class NutritionLabel:
 	ingredients:list
 	allergens:list
 
-	def __init__(self, serving: Serving, nutritionfacts:NutritionFacts, ingredients:list, allergens:List):
+	def __init__(self, serving: Serving, nutritionfacts:NutritionFacts, ingredients:list, allergens:list):
 		self.total_fat_amt = nutritionfacts.total_fat[0]
 		self.total_fat_dv = nutritionfacts.total_fat[1]
 		self.saturated_fat_amt = nutritionfacts.saturated_fat[0]
