@@ -67,12 +67,13 @@ if __name__ == '__main__':
 	batched = PROCESSING_BATCH_SIZE > 0
 
 	with Session(engine) as dbsession:
+		items_processed = 0
 		for dining_location in dining_locations:
+			get_or_create(dbsession, DiningLocation, dining_location.location_id, dining_location, debug=args.debug, batched=batched)
 			menus = dining_location.get_menus(session = session)
 			for menu in menus:
-				# get_or_create(dbsession, DiningMenu, menu.menu_id, menu, debug=args.debug)
+				get_or_create(dbsession, DiningMenu, menu.menu_id, menu, debug=args.debug)
 				items = menu.get_items(session=session)
-				items_processed = 0
 				for item in items:
 					print("checking loc: {}, menu: {}, item: {}".format(dining_location.location_id, menu.menu_id, item.item_id))
 					db_item = dbsession.query(DiningMenuItem).get(item.item_id)
