@@ -138,12 +138,13 @@ if __name__ == '__main__':
 						print("processing loc: {}, menu: {}, item: {}".format(dining_location.location_id, menu.menu_id, item.item_id))
 
 						nut = item.get_nutrition_info(session=session)
-						print(nut)
-						nut.ingredients = [find_or_create(dbsession, Ingredient, Ingredient(None, i), debug=args.debug, name=i) for i in nut.ingredients_list]
-						nut.allergens = [find_or_create(dbsession, Allergen, Allergen(None, i), debug=args.debug, name=i) for i in nut.allergen_list]
-
 						get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug)
-					# reset state for the next menu
+						# print(nut)
+						# if nut.ingredients_list:
+						# 	nut.ingredients = [find_or_create(dbsession, Ingredient, Ingredient(None, i), debug=args.debug, name=i) for i in nut.ingredients_list]
+						# if nut.allergen_list:
+						# 	nut.allergens = [find_or_create(dbsession, Allergen, Allergen(None, i), debug=args.debug, name=i) for i in nut.allergen_list]
+ 					# reset state for the next menu
 					goback(session=session)
 				# reset state for the next location
 				goback(session=session)

@@ -236,7 +236,7 @@ class DiningMenuItem:
 		ingredients = []
 		try:
 			ingredients = data[currentrow].find(class_="cbo_nn_LabelIngredients").string
-			ingredients = ingredient_split(ingredients, ",")
+			# ingredients = ingredient_split(ingredients, ",")
 		except Exception as e:
 			print("an error occurred while looking for ingredients for menuitem {}: ".format(self.item_id) + str(e))
 		
@@ -245,8 +245,8 @@ class DiningMenuItem:
 		currentrow += 1
 		allergens = []
 		try:
-			allergens = data[currentrow].find(class_="cbo_nn_LabelAllergens").string.split(",")
-			allergens = [clean_value(a) for a in allergens]
+			allergens = data[currentrow].find(class_="cbo_nn_LabelAllergens").string#.split(",")
+			# allergens = [clean_value(a) for a in allergens]
 		except Exception as e:
 			print("an error occurred while looking for allergens for menuitem {}: ".format(self.item_id) + str(e))
 
@@ -295,15 +295,15 @@ class NutritionFacts:
 	protein: (str, str)
 	
 	
-label_ingredients = Table('label_ingredients', mapper_registry.metadata,
-    Column('label_id', ForeignKey('nutrition_label.nutrition_label_id'), primary_key=True),
-    Column('ingredient_id', ForeignKey('ingredients.ingredient_id'), primary_key=True)
-)
+# label_ingredients = Table('label_ingredients', mapper_registry.metadata,
+#     Column('label_id', ForeignKey('nutrition_label.nutrition_label_id'), primary_key=True),
+#     Column('ingredient_id', ForeignKey('ingredients.ingredient_id'), primary_key=True)
+# )
 
-label_allergens = Table('label_allergens', mapper_registry.metadata,
-    Column('label_id', ForeignKey('nutrition_label.nutrition_label_id'), primary_key=True),
-    Column('allergen_id', ForeignKey('allergens.allergen_id'), primary_key=True)
-)
+# label_allergens = Table('label_allergens', mapper_registry.metadata,
+#     Column('label_id', ForeignKey('nutrition_label.nutrition_label_id'), primary_key=True),
+#     Column('allergen_id', ForeignKey('allergens.allergen_id'), primary_key=True)
+# )
 
 		
 @mapper_registry.mapped
@@ -336,6 +336,9 @@ class NutritionLabel:
 		Column("total_sugars_dv", String(32)),
 		Column("protein_amt", String(32)),
 		Column("protein_dv", String(32)),
+
+		Column("ingredients", String(2000)),
+		Column("allergens", String(500)),
     )
 	nutrition_label_id:int
 	item_id:int
@@ -363,8 +366,8 @@ class NutritionLabel:
 	protein_amt: str
 	protein_dv: str
 	#temporary vars used while processing the lists and deduping them
-	ingredients_list = []
-	allergens_list = []
+	ingredients:str
+	allergens:str
 
 	def __init__(self, serving: Serving, nutritionfacts:NutritionFacts, ingredients:list, allergens:list):
 		self.total_fat_amt = nutritionfacts.total_fat[0]
@@ -390,17 +393,16 @@ class NutritionLabel:
 		self.serving_size = serving.servingsize
 		self.cals_per_serving = serving.calsperserving
 
-		# fill temp lists
-		self.ingredients_list = ingredients
-		self.allergen_list = allergens 
+		self.ingredients = ingredients
+		self.allergens = allergens 
 
-	__mapper_args__ = {   # type: ignore
-        "properties" : {
-            "ingredients": relationship("Ingredient", secondary=label_ingredients),
-			"allergens": relationship("Allergen", secondary=label_allergens),
+	# __mapper_args__ = {   # type: ignore
+    #     "properties" : {
+    #         "ingredients": relationship("Ingredient", secondary=label_ingredients, nullable=True),
+	# 		"allergens": relationship("Allergen", secondary=label_allergens),
 			
-        }
-    }
+    #     }
+    # }
 
 @mapper_registry.mapped
 @dataclass
