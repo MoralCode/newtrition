@@ -50,6 +50,7 @@ class DiningMenu:
 		self.date = date
 		self.identifier = identifier
 		self._location = None
+		self._items = None
 
 	@property
 	def location(self):
@@ -58,6 +59,21 @@ class DiningMenu:
 	@location.setter
 	def location(self, val):
 		self._location = val
+
+	def get_items(self, session=requests):
+		if self._items is not None:
+			return self.menus
+		
+		menuitem_response = session.post(
+			NN_BASE_URL + "/Menu/SelectMenu",
+			data="menuOid=" + str(self.identifier),
+			headers=JSON_HEADERS)
+		menuitem_html = html_from_json_panel(menuitem_response.json(), "itemPanel")
+		menuitem_list_html = BeautifulSoup(menuitem_html, 'html.parser') 
+		# print(menuitem_list_html)
+		menuitem_list_items = menuitem_list_html.find("table").find_all(class_=["cbo_nn_itemPrimaryRow", "cbo_nn_itemAlternateRow"])
+		self._items = [DiningMenuItem.from_html(html, for_menu=self) for html in menuitem_list_items]
+		return self._items
 
 	@classmethod
 	def from_html(cls, html, for_location=None):
