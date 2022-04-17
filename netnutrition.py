@@ -189,7 +189,7 @@ class DiningMenuItem:
 
 			servinginfo = Serving(int(spc), clean_value(servsize), cals)
 		except Exception as e:
-			print("an error occurred while looking for serving info for menuitem {}: ".format(self.identifier) + str(e))
+			print("an error occurred while looking for serving info for menuitem {}: ".format(self.item_id) + str(e))
 
 		# % dv heading, skip this
 		currentrow += 1
