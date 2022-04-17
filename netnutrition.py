@@ -143,13 +143,11 @@ class DiningMenuItem:
         mapper_registry.metadata,
         Column("item_id", Integer, primary_key=True),
         Column("menu_id", Integer, ForeignKey("dining_menu.menu_id")),
-		Column("nutrition_label_id", Integer, ForeignKey("nutrition_label.nutrition_label_id")),
         Column("name", String(256)),
     )
 	name:str
 	item_id:int
 	menu_id:int
-	nutrition_label_id:int
 
 	def __init__(self, name, identifier):
 		self.name = name
@@ -268,7 +266,7 @@ class DiningMenuItem:
 	__mapper_args__ = {   # type: ignore
         "properties" : {
 			# "location": relationship("DiningLocation", back_populates="menus"),
-            "label": relationship("NutritionLabel", back_populates="item")
+            "nutrition_label": relationship("NutritionLabel")
         }
     }
 
@@ -304,7 +302,7 @@ label_ingredients = Table('label_ingredients', mapper_registry.metadata,
 
 label_allergens = Table('label_allergens', mapper_registry.metadata,
     Column('label_id', ForeignKey('nutrition_label.nutrition_label_id'), primary_key=True),
-    Column('ingredient_id', ForeignKey('allergens.allergen_id'), primary_key=True)
+    Column('allergen_id', ForeignKey('allergens.allergen_id'), primary_key=True)
 )
 
 		
@@ -317,7 +315,7 @@ class NutritionLabel:
         Column("nutrition_label_id", Integer, primary_key=True),
         Column("item_id", Integer, ForeignKey("dining_menu_item.item_id")),
 		Column("servings_per_container", Integer),
-        Column("cals_per_serving", Integer, ForeignKey("dining_menu_item.item_id")),
+        Column("cals_per_serving", Integer),
         Column("serving_size", String(32)),
 
         Column("total_fat_amt", String(32)),
@@ -394,6 +392,13 @@ class NutritionLabel:
 		self.ingredients = [Ingredient(None, i) for i in ingredients]
 		self.allergens = [Allergen(None, i) for i in allergens]
 
+	__mapper_args__ = {   # type: ignore
+        "properties" : {
+            "ingredients": relationship("Ingredient", secondary=label_ingredients),
+			"allergens": relationship("Allergen", secondary=label_allergens),
+			
+        }
+    }
 
 @mapper_registry.mapped
 @dataclass
