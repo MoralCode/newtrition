@@ -252,7 +252,7 @@ class DiningMenuItem:
 		except Exception as e:
 			print("an error occurred while looking for allergens for menuitem {}: ".format(self.item_id) + str(e))
 
-		self._nutrition = NutritionLabel(servinginfo, nutritionfacts, ingredients, allergens)
+		self._nutrition = NutritionLabel(servinginfo, nutritionfacts, ingredients, allergens,for_item=self.item_id)
 		return self._nutrition
 
 	@classmethod
@@ -367,7 +367,7 @@ class NutritionLabel:
 	ingredients:str
 	allergens:str
 
-	def __init__(self, serving: Serving, nutritionfacts:NutritionFacts, ingredients:list, allergens:list):
+	def __init__(self, serving: Serving, nutritionfacts:NutritionFacts, ingredients:list, allergens:list, for_item=None):
 		if nutritionfacts:
 			self.total_fat_amt = nutritionfacts.total_fat[0]
 			self.total_fat_dv = nutritionfacts.total_fat[1]
@@ -390,7 +390,8 @@ class NutritionLabel:
 			self.servings_per_container = serving.servingspercontainer
 			self.serving_size = serving.servingsize
 			self.cals_per_serving = serving.calsperserving
-
+		if for_item:
+			self.item_id = for_item
 		self.ingredients = ingredients
 		self.allergens = allergens 
 
