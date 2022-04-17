@@ -260,7 +260,7 @@ class DiningMenuItem:
 		identifier = grab_id_from_parens(item["onclick"])
 		ins = cls(name, identifier)
 		if for_menu is not None:
-			ins.menu = for_menu
+			ins.menu_id = for_menu.menu_id
 		return ins
 
 	__mapper_args__ = {   # type: ignore
