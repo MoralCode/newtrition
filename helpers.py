@@ -1,4 +1,5 @@
-
+import requests 
+from constants import NN_BASE_URL, JSON_HEADERS
 def grab_id_from_parens(text:str) -> int:
 
 	start = text.find("(")
@@ -39,3 +40,10 @@ def ingredient_split(string, delimiter):
 		if i == len(string)-1:
 			items.append(clean_value(string[last_cut:]))
 	return items
+
+def goback(session = requests):
+	"""Send a request to the server to reset the state so another menu selection is allowed
+	"""
+	return session.post(
+		NN_BASE_URL + "Menu/GoBackFromMenuList",
+		headers=JSON_HEADERS)
