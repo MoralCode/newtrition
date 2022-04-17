@@ -69,10 +69,6 @@ class DiningLocation:
         }
     }
 
-# loc_menu_association_table = Table('association', Base.metadata,
-#     Column('left_id', ForeignKey('left.id')),
-#     Column('right_id', ForeignKey('right.id'))
-# )
 
 @mapper_registry.mapped
 @dataclass
@@ -135,6 +131,12 @@ class DiningMenu:
     }
 
 
+item_labels = Table('item_labels', mapper_registry.metadata,
+    Column('item_id', ForeignKey('dining_menu_item.item_id'), primary_key=True),
+    Column('label_id', ForeignKey('labels.label_id'), primary_key=True),
+)
+
+
 @mapper_registry.mapped
 @dataclass
 class DiningMenuItem:
@@ -154,6 +156,7 @@ class DiningMenuItem:
 		self.item_id = identifier
 		self._menu = None
 		self._nutrition = None
+		self.label_names = []
 
 	@property
 	def nutrition(self):
@@ -261,6 +264,7 @@ class DiningMenuItem:
 		name = next(item.children)
 		identifier = grab_id_from_parens(item["onclick"])
 		ins = cls(name, identifier)
+		self.label_names = [l.get("title") for l in item.find_all("img")]
 		if for_menu is not None:
 			ins.menu_id = for_menu.menu_id
 		return ins
@@ -268,7 +272,9 @@ class DiningMenuItem:
 	__mapper_args__ = {   # type: ignore
         "properties" : {
 			# "location": relationship("DiningLocation", back_populates="menus"),
-            "nutrition_label": relationship("NutritionLabel", uselist=False)
+            "nutrition_label": relationship("NutritionLabel", uselist=False),
+			"labels": relationship("ItemLabel", secondary=item_labels)
+
         }
     }
 
@@ -431,10 +437,6 @@ class Allergen:
 	allergen_id:int
 	name:str
 
-# item_labels = Table('label_ingredients', mapper_registry.metadata,
-#     Column('left_id', ForeignKey('left.id')),
-#     Column('right_id', ForeignKey('right.id'))
-# )
 
 @mapper_registry.mapped
 @dataclass

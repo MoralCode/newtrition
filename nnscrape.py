@@ -3,7 +3,7 @@ import requests
 import requests_cache
 import pickle
 from pathlib import Path
-from netnutrition import DiningLocation, DiningMenu, DiningMenuItem, NutritionLabel, Ingredient, Allergen
+from netnutrition import DiningLocation, DiningMenu, DiningMenuItem, NutritionLabel, Ingredient, Allergen, ItemLabel
 from constants import NN_BASE_URL, COOKIES_FILE, PROCESSING_BATCH_SIZE
 from helpers import goback, find_or_create, get_or_create
 import csv
@@ -83,6 +83,9 @@ if __name__ == '__main__':
 						nut = item.get_nutrition_info(session=session)
 						get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug, batched=batched)
 						# print(nut)
+						if nut.label_names:
+							nut.labels = [find_or_create(dbsession, ItemLabel, ItemLabel(None, i), debug=args.debug, name=i) for i in nut.label_names]
+						
 						# if nut.ingredients_list:
 						# 	nut.ingredients = [find_or_create(dbsession, Ingredient, Ingredient(None, i), debug=args.debug, name=i) for i in nut.ingredients_list]
 						# if nut.allergen_list:
