@@ -119,67 +119,79 @@ class DiningMenuItem:
 		
 		#ignore the forst two rows: name and "nutrition information" heading
 		currentrow = 2
-		
-		#servings per container
-		serv = data[currentrow].find(class_="cbo_nn_LabelBottomBorderLabel")
-		spc = list(serv.children)[0].string.split("\xa0")[0]
-		servsize = serv.find(class_="inline-div-right").string
+		servinginfo = None
+		try:
+			#servings per container
+			serv = data[currentrow].find(class_="cbo_nn_LabelBottomBorderLabel")
+			spc = list(serv.children)[0].string.split("\xa0")[0]
+			servsize = serv.find(class_="inline-div-right").string
 
-		# cals per serving
-		currentrow += 1
-		cals = int(data[currentrow].find(class_="inline-div-right").string)
+			# cals per serving
+			currentrow += 1
+			cals = int(data[currentrow].find(class_="inline-div-right").string)
 
-		servinginfo = Serving(int(spc), clean_value(servsize), cals)
-
+			servinginfo = Serving(int(spc), clean_value(servsize), cals)
+		except Exception as e:
+			print("an error occurred while looking for serving info for menuitem {}: ".format(self.identifier) + str(e))
 
 		# % dv heading, skip this
 		currentrow += 1
+		nutritionfacts = None
+		try:
+			# Total fat
+			currentrow += 1
+			total_fat = extract_nutrition_info(data[currentrow])
+			# saturated fat
+			currentrow += 1
+			saturated_fat = extract_nutrition_info(data[currentrow])
+			# trans fat
+			currentrow += 1
+			trans_fat = extract_nutrition_info(data[currentrow])
+			#Cholesterol
+			currentrow += 1
+			cholesterol = extract_nutrition_info(data[currentrow])
+			# Sodium
+			currentrow += 1
+			sodium = extract_nutrition_info(data[currentrow])
+			# Total Carbohydrate
+			currentrow += 1
+			total_carbohydrate = extract_nutrition_info(data[currentrow])
+			# Dietary Fiber
+			currentrow += 1
+			fiber = extract_nutrition_info(data[currentrow])
+			# Total Sugars
+			currentrow += 1
+			total_sugars = extract_nutrition_info(data[currentrow])
+			# Protein
+			currentrow += 1
+			protein = extract_nutrition_info(data[currentrow])
 
-		# Total fat
-		currentrow += 1
-		total_fat = extract_nutrition_info(data[currentrow])
-		# saturated fat
-		currentrow += 1
-		saturated_fat = extract_nutrition_info(data[currentrow])
-		# trans fat
-		currentrow += 1
-		trans_fat = extract_nutrition_info(data[currentrow])
-		#Cholesterol
-		currentrow += 1
-		cholesterol = extract_nutrition_info(data[currentrow])
-		# Sodium
-		currentrow += 1
-		sodium = extract_nutrition_info(data[currentrow])
-		# Total Carbohydrate
-		currentrow += 1
-		total_carbohydrate = extract_nutrition_info(data[currentrow])
-		# Dietary Fiber
-		currentrow += 1
-		fiber = extract_nutrition_info(data[currentrow])
-		# Total Sugars
-		currentrow += 1
-		total_sugars = extract_nutrition_info(data[currentrow])
-		# Protein
-		currentrow += 1
-		protein = extract_nutrition_info(data[currentrow])
-
-		nutritionfacts = NutritionFacts(total_fat, saturated_fat, trans_fat, cholesterol, sodium, total_carbohydrate, fiber, total_sugars, protein)
-		# second table label/spacer
-		currentrow += 1
-		# label disclaimer
-		currentrow += 1
-		
+			nutritionfacts = NutritionFacts(total_fat, saturated_fat, trans_fat, cholesterol, sodium, total_carbohydrate, fiber, total_sugars, protein)
+			# second table label/spacer
+			currentrow += 1
+			# label disclaimer
+			currentrow += 1
+		except Exception as e:
+			print("an error occurred while looking for nutrition facts for menuitem {}: ".format(self.identifier) + str(e))
 
 		# ingredients
 		currentrow += 1
-		ingredients = data[currentrow].find(class_="cbo_nn_LabelIngredients").string
-		ingredients = ingredient_split(ingredients, ",")
+		ingredients = []
+		try:
+			ingredients = data[currentrow].find(class_="cbo_nn_LabelIngredients").string
+			ingredients = ingredient_split(ingredients, ",")
+		except Exception as e:
+			print("an error occurred while looking for ingredients for menuitem {}: ".format(self.identifier) + str(e))
+		
 
 		# allergens
 		currentrow += 1
-
-		allergens = data[currentrow].find(class_="cbo_nn_LabelAllergens").string.split(",")
-		allergens = [clean_value(a) for a in allergens]
+		allergens = []
+		try:
+			allergens = data[currentrow].find(class_="cbo_nn_LabelAllergens").string.split(",")
+			allergens = [clean_value(a) for a in allergens]
+		except Exception as e:
+			print("an error occurred while looking for allergens for menuitem {}: ".format(self.identifier) + str(e))
 
 		self._nutrition = NutritionLabel(servinginfo, nutritionfacts, ingredients, allergens)
 		return self._nutrition
