@@ -14,6 +14,37 @@ from sqlalchemy.orm import Session
 from sqlalchemy import MetaData
 from netnutrition import mapper_registry
 
+
+# based on https://stackoverflow.com/a/6078058/
+def get_or_create(dbsession, model, identifier, fetched_object, debug = False):
+	instance = dbsession.query(model).get(identifier)
+	if debug:
+		print("i:" + str(instance))
+	if instance is None:
+		dbsession.add(fetched_object)
+		dbsession.commit()
+		if debug:
+			print("added {} with id {} to db".format(model.__name__, identifier))
+	elif debug:
+		print("{} with id {} already present in db".format(model.__name__, identifier))
+
+
+	
+def find_or_create(dbsession, model, fetched_object, debug = False, **kwargs):
+	instance = dbsession.query(model).filter_by(**kwargs).first()
+	if debug:
+		print("i:" + str(instance))
+	if instance is None:
+		dbsession.add(fetched_object)
+		dbsession.commit()
+		if debug:
+			print("added {} to db".format(fetched_object))
+		return fetched_object
+	else:
+		if debug:
+			print("{} already present in db".format(instance))
+		return instance	
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Process some integers.')
 	parser.add_argument('mode', choices=['test', 'csv', 'archive'],
@@ -108,8 +139,8 @@ if __name__ == '__main__':
 
 						nut = item.get_nutrition_info(session=session)
 						print(nut)
-						nut.ingredients = list(set([find_or_create(dbsession, Ingredient, Ingredient(None, i), debug=args.debug, name=i) for i in nut.ingredients_list]))
-						nut.allergens = list(set([find_or_create(dbsession, Allergen, Allergen(None, i), debug=args.debug, name=i) for i in nut.allergen_list]))
+						nut.ingredients = [find_or_create(dbsession, Ingredient, Ingredient(None, i), debug=args.debug, name=i) for i in nut.ingredients_list]
+						nut.allergens = [find_or_create(dbsession, Allergen, Allergen(None, i), debug=args.debug, name=i) for i in nut.allergen_list]
 
 						get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug)
 					# reset state for the next menu
