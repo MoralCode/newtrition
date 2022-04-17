@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from helpers import grab_id_from_parens, html_from_json_panel, extract_nutrition_info, clean_value
+from helpers import grab_id_from_parens, html_from_json_panel, extract_nutrition_info, clean_value, ingredient_split
 from dataclasses import dataclass
 from constants import NN_BASE_URL, JSON_HEADERS
 import requests
@@ -164,10 +164,22 @@ class DiningMenuItem:
 		protein = extract_nutrition_info(data[currentrow])
 
 		nutritionfacts = NutritionFacts(total_fat, saturated_fat, trans_fat, cholesterol, sodium, total_carbohydrate, fiber, total_sugars, protein)
-		ingredients = []
-		allergens = []
+		# second table label/spacer
+		currentrow += 1
+		# label disclaimer
+		currentrow += 1
+		
 
+		# ingredients
+		currentrow += 1
+		ingredients = data[currentrow].find(class_="cbo_nn_LabelIngredients").string
+		ingredients = ingredient_split(ingredients, ",")
 
+		# allergens
+		currentrow += 1
+
+		allergens = data[currentrow].find(class_="cbo_nn_LabelAllergens").string.split(",")
+		allergens = [clean_value(a) for a in allergens]
 
 		self._nutrition = NutritionLabel(servinginfo, nutritionfacts, ingredients, allergens)
 		return self._nutrition
