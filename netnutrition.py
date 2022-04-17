@@ -363,6 +363,9 @@ class NutritionLabel:
 	protein_amt: str
 	protein_dv: str
 	#TODO: make me into separate tables to dedup
+	#temporary vars used while processing the lists and deduping them
+	ingredients_list = []
+	allergens_list = []
 
 	def __init__(self, serving: Serving, nutritionfacts:NutritionFacts, ingredients:list, allergens:list):
 		self.total_fat_amt = nutritionfacts.total_fat[0]
@@ -388,9 +391,9 @@ class NutritionLabel:
 		self.serving_size = serving.servingsize
 		self.cals_per_serving = serving.calsperserving
 
-		# what about ingredients and allergens?
-		self.ingredients = [Ingredient(None, i) for i in ingredients]
-		self.allergens = [Allergen(None, i) for i in allergens]
+		# fill temp lists
+		self.ingredients_list = ingredients
+		self.allergen_list = allergens 
 
 	__mapper_args__ = {   # type: ignore
         "properties" : {
