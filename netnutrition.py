@@ -362,7 +362,6 @@ class NutritionLabel:
 	total_sugars_dv: str
 	protein_amt: str
 	protein_dv: str
-	#TODO: make me into separate tables to dedup
 	#temporary vars used while processing the lists and deduping them
 	ingredients_list = []
 	allergens_list = []
