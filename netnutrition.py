@@ -335,9 +335,7 @@ class NutritionLabel:
 		Column("fiber_amt", String(32)),
 		Column("fiber_dv", String(32)),
 		Column("total_sugars_amt", String(32)),
-		Column("total_sugars_dv", String(32)),
 		Column("protein_amt", String(32)),
-		Column("protein_dv", String(32)),
 
 		Column("ingredients", String(2000)),
 		Column("allergens", String(500)),
@@ -364,9 +362,7 @@ class NutritionLabel:
 	fiber_amt: str
 	fiber_dv: str
 	total_sugars_amt: str
-	total_sugars_dv: str
 	protein_amt: str
-	protein_dv: str
 	#temporary vars used while processing the lists and deduping them
 	ingredients:str
 	allergens:str
@@ -388,9 +384,7 @@ class NutritionLabel:
 			self.fiber_amt = nutritionfacts.fiber[0]
 			self.fiber_dv = nutritionfacts.fiber[1]
 			self.total_sugars_amt = nutritionfacts.total_sugars[0]
-			self.total_sugars_dv = nutritionfacts.total_sugars[1]
 			self.protein_amt = nutritionfacts.protein[0]
-			self.protein_dv = nutritionfacts.protein[1]
 
 		if serving:
 			self.servings_per_container = serving.servingspercontainer
