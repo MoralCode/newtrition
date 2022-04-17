@@ -124,7 +124,7 @@ class DiningMenu:
 		identifier = grab_id_from_parens(html.find(class_="cbo_nn_menuLink")["onclick"])
 		ins = cls(date, identifier)
 		if for_location is not None:
-			ins.location = for_location
+			ins.location_id = for_location.location_id
 		return ins
 	
 	__mapper_args__ = {   # type: ignore
