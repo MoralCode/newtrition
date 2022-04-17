@@ -77,3 +77,33 @@ class DiningMenu:
 		if for_location is not None:
 			ins.location = for_location
 		return ins
+
+
+
+@dataclass
+class DiningMenuItem:
+	date:str
+	identifier:int
+
+	def __init__(self, date, identifier):
+		self.date = date
+		self.identifier = identifier
+		self._location = None
+
+	@property
+	def location(self):
+		return self._location
+	
+	@location.setter
+	def location(self, val):
+		self._location = val
+
+	@classmethod
+	def from_html(cls, html, for_location=None):
+		title = html.find(class_="card-title")
+		date = title.string
+		identifier = grab_id_from_parens(html.find(class_="cbo_nn_menuLink")["onclick"])
+		ins = cls(date, identifier)
+		if for_location is not None:
+			ins.location = for_location
+		return ins
