@@ -95,6 +95,11 @@ if __name__ == '__main__':
 			mapper_registry.metadata.create_all(engine)
 
 
-		with Session(engine) as session:
-			session.add_all(dining_locations)
-			session.commit()
+		with Session(engine) as dbsession:
+			for dining_location in dining_locations:
+				location = dbsession.query(DiningLocation).get(dining_location.location_id)
+				if location is None:
+					dbsession.add(dining_location)
+					dbsession.commit()
+				# else:
+				# 	print("location exists: " + str(dining_location.location_id))
