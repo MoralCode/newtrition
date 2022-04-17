@@ -23,3 +23,15 @@ class DiningLocation:
 	# def __init__(self, name, identifier):
 	# 	self.name = name
 	# 	self.id = identifier
+
+@dataclass
+class DiningMenu:
+	date:str
+	identifier:int
+
+	@classmethod
+	def from_html(cls, html):
+		title = html.find(class_="card-title")
+		date = title.string
+		identifier = grab_id_from_parens(html.find(class_="cbo_nn_menuLink")["onclick"])
+		return cls(date, identifier)

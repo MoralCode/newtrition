@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests_cache
 import pickle
 from pathlib import Path
-from netnutrition import DiningLocation
+from netnutrition import DiningLocation, DiningMenu
 
 COOKIES_FILE = "cookies.txt"
 NN_BASE_URL = "https://www.rit.edu/fa/diningservices/netnutrition/1"
