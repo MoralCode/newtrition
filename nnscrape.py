@@ -112,7 +112,7 @@ if __name__ == '__main__':
 					for item in items:
 						print("checking loc: {}, menu: {}, item: {}".format(dining_location.location_id, menu.menu_id, item.item_id))
 						db_item = dbsession.query(DiningMenuItem).get(item.item_id)
-						if db_item is None:
+						if db_item is None or db_item.nutrition_label == []:
 							nut = item.get_nutrition_info(session=session)
 							get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug)
 							# print(nut)
