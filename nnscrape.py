@@ -21,6 +21,9 @@ with open(COOKIES_FILE, 'wb') as c:
 	pickle.dump(session.cookies, c)
 
 home_html = BeautifulSoup(homepage.content, 'html.parser') 
+item_ids = set()
+
+
 with open('data.csv', 'w') as csvfile:
 	spamwriter = csv.writer(csvfile)
 	dining_locations_html = home_html.find(id="cbo_nn_unitDataList").find(class_="row").children
@@ -33,6 +36,10 @@ with open('data.csv', 'w') as csvfile:
 			items = menu.get_items(session = session)
 			for item in items:
 				print("processing loc: {}, menu: {}, item: {}".format(location.identifier, menu.identifier, item.identifier))
+				if len(set([item.identifier]).intersection(item_ids)) == 1:
+					print("\trepeat item found")
+				else:
+					item_ids.add(item.identifier)
 				nut = item.get_nutrition_info(session=session)
 				try:
 					spamwriter.writerow([item.name, location.name, nut.serving.calsperserving])
