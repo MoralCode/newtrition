@@ -128,10 +128,10 @@ if __name__ == '__main__':
 							try:
 								get_or_create(dbsession, DiningMenuItem, item.item_id, item, debug=args.debug, batched=batched)
 							except Exception as e:
-								print(e)
+								print("an error occurred while adding dining item: " + str(e))
 								print(nut)
 								# print(nut.ingredients_list)
-								raise e
+								# raise e
 						
 							items_processed += 1
 					if items_processed > 0:
