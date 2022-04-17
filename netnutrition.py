@@ -372,28 +372,30 @@ class NutritionLabel:
 	allergens:str
 
 	def __init__(self, serving: Serving, nutritionfacts:NutritionFacts, ingredients:list, allergens:list):
-		self.total_fat_amt = nutritionfacts.total_fat[0]
-		self.total_fat_dv = nutritionfacts.total_fat[1]
-		self.saturated_fat_amt = nutritionfacts.saturated_fat[0]
-		self.saturated_fat_dv = nutritionfacts.saturated_fat[1]
-		self.trans_fat_amt = nutritionfacts.trans_fat[0]
-		self.trans_fat_dv = nutritionfacts.trans_fat[1]
-		self.cholesterol_amt = nutritionfacts.cholesterol[0]
-		self.cholesterol_dv = nutritionfacts.cholesterol[1]
-		self.sodium_amt = nutritionfacts.sodium[0]
-		self.sodium_dv = nutritionfacts.sodium[1]
-		self.total_carbohydrate_amt = nutritionfacts.total_carbohydrate[0]
-		self.total_carbohydrate_dv = nutritionfacts.total_carbohydrate[1]
-		self.fiber_amt = nutritionfacts.fiber[0]
-		self.fiber_dv = nutritionfacts.fiber[1]
-		self.total_sugars_amt = nutritionfacts.total_sugars[0]
-		self.total_sugars_dv = nutritionfacts.total_sugars[1]
-		self.protein_amt = nutritionfacts.protein[0]
-		self.protein_dv = nutritionfacts.protein[1]
-		
-		self.servings_per_container = serving.servingspercontainer
-		self.serving_size = serving.servingsize
-		self.cals_per_serving = serving.calsperserving
+		if nutritionfacts:
+			self.total_fat_amt = nutritionfacts.total_fat[0]
+			self.total_fat_dv = nutritionfacts.total_fat[1]
+			self.saturated_fat_amt = nutritionfacts.saturated_fat[0]
+			self.saturated_fat_dv = nutritionfacts.saturated_fat[1]
+			self.trans_fat_amt = nutritionfacts.trans_fat[0]
+			self.trans_fat_dv = nutritionfacts.trans_fat[1]
+			self.cholesterol_amt = nutritionfacts.cholesterol[0]
+			self.cholesterol_dv = nutritionfacts.cholesterol[1]
+			self.sodium_amt = nutritionfacts.sodium[0]
+			self.sodium_dv = nutritionfacts.sodium[1]
+			self.total_carbohydrate_amt = nutritionfacts.total_carbohydrate[0]
+			self.total_carbohydrate_dv = nutritionfacts.total_carbohydrate[1]
+			self.fiber_amt = nutritionfacts.fiber[0]
+			self.fiber_dv = nutritionfacts.fiber[1]
+			self.total_sugars_amt = nutritionfacts.total_sugars[0]
+			self.total_sugars_dv = nutritionfacts.total_sugars[1]
+			self.protein_amt = nutritionfacts.protein[0]
+			self.protein_dv = nutritionfacts.protein[1]
+
+		if serving:
+			self.servings_per_container = serving.servingspercontainer
+			self.serving_size = serving.servingsize
+			self.cals_per_serving = serving.calsperserving
 
 		self.ingredients = ingredients
 		self.allergens = allergens 
