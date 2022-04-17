@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from bs4 import BeautifulSoup
 from helpers import grab_id_from_parens, html_from_json_panel, extract_nutrition_info, clean_value, ingredient_split
 from dataclasses import dataclass
@@ -7,10 +9,33 @@ import datetime
 from dateutil.parser import parse
 
 
+from dataclasses import field
+from typing import List
+from typing import Optional
+
+from sqlalchemy import Column
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String, Date
+from sqlalchemy import Table
+from sqlalchemy.orm import registry
+from sqlalchemy.orm import relationship
+
+mapper_registry = registry()
+
+
+@mapper_registry.mapped
 @dataclass
 class DiningLocation:
+	__table__ = Table(
+        "dining_location",
+        mapper_registry.metadata,
+        Column("location_id", Integer, primary_key=True),
+        # Column("name", Integer, ForeignKey("user.id")),
+        Column("name", String(256)),
+    )
 	name:str
-	identifier: int
+	location_id: int
 
 	def get_menus(self, session=requests):
 		if self._menus is not None:
@@ -18,7 +43,7 @@ class DiningLocation:
 		
 		menu_response = session.post(
 			NN_BASE_URL + "/Unit/SelectUnitFromUnitsList",
-			data="unitOid=" + str(self.identifier),
+			data="unitOid=" + str(self.location_id),
 			headers=JSON_HEADERS)
 		menu_html = html_from_json_panel(menu_response.json(),"menuPanel")
 		menu_list_html = BeautifulSoup(menu_html, 'html.parser') 
@@ -35,18 +60,37 @@ class DiningLocation:
 
 	def __init__(self, name, identifier):
 		self.name = name
-		self.identifier = identifier
+		self.location_id = identifier
 		self._menus = None
 
+	__mapper_args__ = {   # type: ignore
+        "properties" : {
+            "menus": relationship("DiningMenu", back_populates="location")
+        }
+    }
 
+# loc_menu_association_table = Table('association', Base.metadata,
+#     Column('left_id', ForeignKey('left.id')),
+#     Column('right_id', ForeignKey('right.id'))
+# )
+
+@mapper_registry.mapped
 @dataclass
 class DiningMenu:
+	__table__ = Table(
+        "dining_menu",
+        mapper_registry.metadata,
+        Column("menu_id", Integer, primary_key=True),
+        Column("location_id", Integer, ForeignKey("dining_location.location_id")),
+        Column("date", Date()),
+    )
 	date:datetime.datetime
-	identifier:int
+	menu_id:int
+	location_id: int
 
 	def __init__(self, date, identifier):
 		self.date = parse(date)
-		self.identifier = identifier
+		self.menu_id = identifier
 		self._location = None
 		self._items = None
 
@@ -57,6 +101,7 @@ class DiningMenu:
 	@location.setter
 	def location(self, val):
 		self._location = val
+		
 
 	def get_items(self, session=requests):
 		if self._items is not None:
@@ -64,11 +109,10 @@ class DiningMenu:
 		
 		menuitem_response = session.post(
 			NN_BASE_URL + "/Menu/SelectMenu",
-			data="menuOid=" + str(self.identifier),
+			data="menuOid=" + str(self.menu_id),
 			headers=JSON_HEADERS)
 		menuitem_html = html_from_json_panel(menuitem_response.json(), "itemPanel")
 		menuitem_list_html = BeautifulSoup(menuitem_html, 'html.parser') 
-		# print(menuitem_list_html)
 		menuitem_list_items = menuitem_list_html.find("table").find_all(class_=["cbo_nn_itemPrimaryRow", "cbo_nn_itemAlternateRow"])
 		self._items = [DiningMenuItem.from_html(html, for_menu=self) for html in menuitem_list_items]
 		return self._items
@@ -82,17 +126,32 @@ class DiningMenu:
 		if for_location is not None:
 			ins.location = for_location
 		return ins
+	
+	__mapper_args__ = {   # type: ignore
+        "properties" : {
+			"location": relationship("DiningLocation", back_populates="menus"),
+            "items": relationship("DiningMenuItem")#, back_populates="menu"
+        }
+    }
 
 
-
+@mapper_registry.mapped
 @dataclass
 class DiningMenuItem:
+	__table__ = Table(
+        "dining_menu_item",
+        mapper_registry.metadata,
+        Column("item_id", Integer, primary_key=True),
+        Column("menu_id", Integer, ForeignKey("dining_menu.menu_id")),
+        Column("name", String(256)),
+    )
 	name:str
-	identifier:int
+	item_id:int
+	menu_id:int
 
 	def __init__(self, name, identifier):
 		self.name = name
-		self.identifier = identifier
+		self.item_id = identifier
 		self._menu = None
 		self._nutrition = None
 
@@ -110,7 +169,7 @@ class DiningMenuItem:
 		
 		nutrition_response = session.post(
 			NN_BASE_URL + "/NutritionDetail/ShowItemNutritionLabel",
-			data="detailOid=" + str(self.identifier),
+			data="detailOid=" + str(self.item_id),
 			headers=JSON_HEADERS)
 		nutrition_html = BeautifulSoup(nutrition_response.content, 'html.parser') 
 		data = list(nutrition_html.find("table").children)
