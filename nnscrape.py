@@ -127,6 +127,12 @@ if __name__ == '__main__':
 		if args.createdb:
 			mapper_registry.metadata.create_all(engine)
 
+			# then, load the Alembic configuration and generate the
+			# version table, "stamping" it with the most recent rev:
+			from alembic.config import Config
+			from alembic import command
+			alembic_cfg = Config("./alembic.ini")
+			command.stamp(alembic_cfg, "head")
 
 		with Session(engine) as dbsession:
 			for dining_location in dining_locations:

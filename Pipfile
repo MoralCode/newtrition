@@ -9,6 +9,7 @@ requests = "*"
 requests-cache = "*"
 python-dateutil = "*"
 sqlalchemy = "*"
+alembic = "*"
 
 [dev-packages]
 
