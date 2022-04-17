@@ -5,45 +5,14 @@ import pickle
 from pathlib import Path
 from netnutrition import DiningLocation, DiningMenu, DiningMenuItem, NutritionLabel, Ingredient, Allergen
 from constants import NN_BASE_URL, COOKIES_FILE
-from helpers import goback
+from helpers import goback, find_or_create, get_or_create
 import csv
 import argparse
 
 from database import engine
 from sqlalchemy.orm import Session
 from sqlalchemy import MetaData
-from netnutrition import mapper_registry
-
-
-# based on https://stackoverflow.com/a/6078058/
-def get_or_create(dbsession, model, identifier, fetched_object, debug = False):
-	instance = dbsession.query(model).get(identifier)
-	if debug:
-		print("i:" + str(instance))
-	if instance is None:
-		dbsession.add(fetched_object)
-		dbsession.commit()
-		if debug:
-			print("added {} with id {} to db".format(model.__name__, identifier))
-	elif debug:
-		print("{} with id {} already present in db".format(model.__name__, identifier))
-
-
-	
-def find_or_create(dbsession, model, fetched_object, debug = False, **kwargs):
-	instance = dbsession.query(model).filter_by(**kwargs).first()
-	if debug:
-		print("i:" + str(instance))
-	if instance is None:
-		dbsession.add(fetched_object)
-		dbsession.commit()
-		if debug:
-			print("added {} to db".format(fetched_object))
-		return fetched_object
-	else:
-		if debug:
-			print("{} already present in db".format(instance))
-		return instance	
+from netnutrition import mapper_registry	
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Process some integers.')

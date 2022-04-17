@@ -47,3 +47,33 @@ def goback(session = requests):
 	return session.post(
 		NN_BASE_URL + "Menu/GoBackFromMenuList",
 		headers=JSON_HEADERS)
+
+# based on https://stackoverflow.com/a/6078058/
+def get_or_create(dbsession, model, identifier, fetched_object, debug = False):
+	instance = dbsession.query(model).get(identifier)
+	if debug:
+		print("retrieved instance:" + str(instance))
+	if instance is None:
+		dbsession.add(fetched_object)
+		dbsession.commit()
+		if debug:
+			print("added {} with id {} to db".format(model.__name__, identifier))
+	elif debug:
+		print("{} with id {} already present in db".format(model.__name__, identifier))
+
+
+	
+def find_or_create(dbsession, model, fetched_object, debug = False, **kwargs):
+	instance = dbsession.query(model).filter_by(**kwargs).first()
+	if debug:
+		print("retrieved instance::" + str(instance))
+	if instance is None:
+		dbsession.add(fetched_object)
+		dbsession.commit()
+		if debug:
+			print("added {} to db".format(fetched_object))
+		return fetched_object
+	else:
+		if debug:
+			print("{} already present in db".format(instance))
+		return instance
