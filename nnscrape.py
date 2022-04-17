@@ -3,7 +3,7 @@ import requests
 import requests_cache
 import pickle
 from pathlib import Path
-from netnutrition import DiningLocation, DiningMenu
+from netnutrition import DiningLocation, DiningMenu, DiningMenuItem, NutritionLabel, Ingredient, Allergen
 from constants import NN_BASE_URL, COOKIES_FILE
 from helpers import goback
 import csv
