@@ -88,22 +88,22 @@ class DiningMenuItem:
 	def __init__(self, date, identifier):
 		self.date = date
 		self.identifier = identifier
-		self._location = None
+		self._menu = None
 
 	@property
-	def location(self):
-		return self._location
+	def menu(self):
+		return self._menu
 	
-	@location.setter
-	def location(self, val):
-		self._location = val
+	@menu.setter
+	def menu(self, val):
+		self._menu = val
 
 	@classmethod
-	def from_html(cls, html, for_location=None):
+	def from_html(cls, html, for_menu=None):
 		title = html.find(class_="card-title")
 		date = title.string
 		identifier = grab_id_from_parens(html.find(class_="cbo_nn_menuLink")["onclick"])
 		ins = cls(date, identifier)
-		if for_location is not None:
-			ins.location = for_location
+		if for_menu is not None:
+			ins.menu = for_menu
 		return ins
