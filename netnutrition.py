@@ -233,7 +233,7 @@ class DiningMenuItem:
 
 		# ingredients
 		currentrow += 1
-		ingredients = []
+		ingredients = None
 		try:
 			ingredients = data[currentrow].find(class_="cbo_nn_LabelIngredients").string
 			ingredients = clean_value(ingredients)
@@ -244,7 +244,7 @@ class DiningMenuItem:
 
 		# allergens
 		currentrow += 1
-		allergens = []
+		allergens = None
 		try:
 			allergens = data[currentrow].find(class_="cbo_nn_LabelAllergens").string#.split(",")
 			allergens = clean_value(allergens)
