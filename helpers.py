@@ -19,3 +19,23 @@ def clean_value(val):
 	if val is None:
 		return val
 	return val.replace("\xa0", " ").strip()
+
+def ingredient_split(string, delimiter):
+	"""essentially the same as python string.split, but does not traverse into parenthesis
+	"""
+	items = []
+	last_cut = 0
+	current_paren_level = 0
+	for i in range(len(string)):
+		if string[i] == "(":
+			current_paren_level += 1
+		elif string[i] == ")":
+			current_paren_level -= 1
+		if (string[i] == delimiter) and current_paren_level <= 0:
+			items.append(clean_value(string[last_cut:i]))
+			# update the cut position and exclude the parens
+			last_cut = i + 1
+		# make sure the last item in the list gets included
+		if i == len(string)-1:
+			items.append(clean_value(string[last_cut:]))
+	return items
