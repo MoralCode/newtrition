@@ -16,7 +16,7 @@ class DiningLocation:
 
 	def get_menus(self, session=requests):
 		if self._menus is not None:
-			return self.menus
+			return self._menus
 		
 		menu_response = session.post(
 			NN_BASE_URL + "/Unit/SelectUnitFromUnitsList",
