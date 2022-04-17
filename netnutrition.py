@@ -55,13 +55,18 @@ class DiningMenu:
 	date:str
 	identifier:int
 
+	def __init__(self, date, identifier):
+		self.date = date
+		self.identifier = identifier
+		self._location = None
+
 	@property
 	def location(self):
 		return self._location
 	
-	@property.setter
-	def location(self, location):
-		self._location = location
+	@location.setter
+	def location(self, val):
+		self._location = val
 
 	@classmethod
 	def from_html(cls, html, for_location=None):
@@ -69,6 +74,6 @@ class DiningMenu:
 		date = title.string
 		identifier = grab_id_from_parens(html.find(class_="cbo_nn_menuLink")["onclick"])
 		ins = cls(date, identifier)
-		if for_location:
+		if for_location is not None:
 			ins.location = for_location
 		return ins
