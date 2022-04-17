@@ -1,14 +1,28 @@
 from bs4 import BeautifulSoup
 import requests
+import requests_cache
 import pickle
 from pathlib import Path
 from netnutrition import DiningLocation, DiningMenu
 from constants import NN_BASE_URL, COOKIES_FILE
 from helpers import goback
 import csv
+import argparse
+
+
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--cached', action='store_true',
+                    help='whether caching should be used')
+args = parser.parse_args()
+
 
 # this will need to be put back once this goes live as every POST request needs to hit NN to work
-session = session = requests.Session() #, allowable_methods=['GET'])
+session = None
+if args.cached:
+	session=requests_cache.CachedSession('nn_pagecache')
+else:
+	session = session = requests.Session() #, allowable_methods=['GET'])
+
 if Path(COOKIES_FILE).exists():
 	with open(COOKIES_FILE, 'rb') as c:
 		# contents = c.read()
