@@ -44,6 +44,8 @@ if args.show_cookies:
 # Get cookies
 	print(session.cookies.get_dict())
 
+dining_locations_html = home_html.find(id="cbo_nn_unitDataList").find(class_="row").children
+dining_locations = [DiningLocation.from_html(loc) for loc in dining_locations_html]
 
 if args.mode == "csv":
 	item_ids = set()
@@ -51,9 +53,6 @@ if args.mode == "csv":
 
 	with open('data.csv', 'w') as csvfile:
 		spamwriter = csv.writer(csvfile)
-		dining_locations_html = home_html.find(id="cbo_nn_unitDataList").find(class_="row").children
-		dining_locations = [DiningLocation.from_html(loc) for loc in dining_locations_html]
-
 		for location in dining_locations:
 			menus = location.get_menus(session = session)
 			for menu in menus:
@@ -76,9 +75,6 @@ if args.mode == "csv":
 			goback(session=session)
 
 elif args.mode == "test":
-	dining_locations_html = home_html.find(id="cbo_nn_unitDataList").find(class_="row").children
-	dining_locations = [DiningLocation.from_html(loc) for loc in dining_locations_html]
-
 
 	artesanos = dining_locations[1]
 	a_menu = artesanos.get_menus(session = session)[0]
