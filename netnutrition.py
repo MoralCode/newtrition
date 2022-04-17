@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from helpers import grab_id_from_parens
 from dataclasses import dataclass
-
+from constants import NN_BASE_URL
 class NetNutrition:
 	"""A class representing the net nutrition API and keeping track of the current state?
 	"""

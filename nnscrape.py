@@ -3,10 +3,8 @@ import requests_cache
 import pickle
 from pathlib import Path
 from netnutrition import DiningLocation, DiningMenu
+from constants import NN_BASE_URL, COOKIES_FILE
 
-COOKIES_FILE = "cookies.txt"
-NN_BASE_URL = "https://www.rit.edu/fa/diningservices/netnutrition/1"
-# https://www.rit.edu/fa/diningservices/netnutrition/1/NutritionDetail/ShowItemNutritionLabel
 
 session = requests_cache.CachedSession('nn_pagecache')
 if Path(COOKIES_FILE).exists():
