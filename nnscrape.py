@@ -83,9 +83,8 @@ if __name__ == '__main__':
 						if db_item.nutrition_label == []:
 							nut = item.get_nutrition_info(session=session)
 							get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug, batched=batched)
-						# print(nut)
-						if item.label_names:
-							item.labels.extend([find_or_create(dbsession, ItemLabel, ItemLabel(None, i), debug=args.debug, name=i) for i in item.label_names])
+						if item.label_names != list(item.labels):
+							db_item.labels = [find_or_create(dbsession, ItemLabel, ItemLabel(None, i), name=i) for i in item.label_names]
 						
 						# if nut.ingredients_list:
 						# 	nut.ingredients = [find_or_create(dbsession, Ingredient, Ingredient(None, i), debug=args.debug, name=i) for i in nut.ingredients_list]
