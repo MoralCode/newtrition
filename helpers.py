@@ -59,8 +59,10 @@ def get_or_create(dbsession, model, identifier, fetched_object, debug = False, b
 			dbsession.commit()
 		if debug:
 			print("added {} with id {} to db".format(model.__name__, identifier))
-	elif debug:
-		print("{} with id {} already present in db".format(model.__name__, identifier))
+	else:
+		if debug:
+			print("{} with id {} already present in db".format(model.__name__, identifier))
+		return instance
 
 
 	
