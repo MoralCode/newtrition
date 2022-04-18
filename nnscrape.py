@@ -76,7 +76,7 @@ if __name__ == '__main__':
 				items = menu.get_items(session=session)
 				for item in items:
 					print("checking loc: {}, menu: {}, item: {}".format(dining_location.location_id, menu.menu_id, item.item_id))
-					db_item = dbsession.query(DiningMenuItem).get(item.item_id)
+					db_item = get_or_create(dbsession, DiningMenuItem, item.item_id, item, debug=args.debug, batched=batched)
 					if db_item is None or db_item.nutrition_label == []:
 						if items_processed >= PROCESSING_BATCH_SIZE and batched:
 							dbsession.commit()
@@ -90,13 +90,6 @@ if __name__ == '__main__':
 						# 	nut.ingredients = [find_or_create(dbsession, Ingredient, Ingredient(None, i), debug=args.debug, name=i) for i in nut.ingredients_list]
 						# if nut.allergen_list:
 						# 	nut.allergens = [find_or_create(dbsession, Allergen, Allergen(None, i), debug=args.debug, name=i) for i in nut.allergen_list]
-						try:
-							get_or_create(dbsession, DiningMenuItem, item.item_id, item, debug=args.debug, batched=batched)
-						except Exception as e:
-							print("an error occurred while adding dining item: " + str(e))
-							print(nut)
-							# print(nut.ingredients_list)
-							# raise e
 					
 						items_processed += 1
 				if items_processed > 0:
