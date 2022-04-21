@@ -84,7 +84,7 @@ if __name__ == '__main__':
 				for item in items:
 					print("checking loc: {}, menu: {}, item: {}".format(dining_location.location_id, menu.menu_id, item.item_id))
 					db_item = get_or_create(dbsession, DiningMenuItem, item.item_id, item, debug=args.debug, batched=batched)
-					if db_item is None or db_item.nutrition_label == []:
+					if db_item != item:
 						if items_processed >= PROCESSING_BATCH_SIZE and batched:
 							dbsession.commit()
 						if db_item.nutrition_label == item.nutrition:
