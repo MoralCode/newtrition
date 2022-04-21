@@ -6,7 +6,7 @@ from pathlib import Path
 from netnutrition import DiningLocation, DiningMenu, DiningMenuItem, NutritionLabel, Ingredient, Allergen, ItemLabel
 from constants import NN_BASE_URL, COOKIES_FILE, PROCESSING_BATCH_SIZE
 from helpers import goback, find_or_create, get_or_create
-import csv
+import csv, sys
 import argparse
 
 from database import engine
@@ -51,8 +51,15 @@ if __name__ == '__main__':
 	# Get cookies
 		print(session.cookies.get_dict())
 
-	dining_locations_html = home_html.find(id="cbo_nn_unitDataList").find(class_="row").children
-	dining_locations = [DiningLocation.from_html(loc) for loc in dining_locations_html]
+	dining_locations_html = None
+	try:
+		dining_locations_html = home_html.find(id="cbo_nn_unitDataList").find(class_="row").children
+		dining_locations = [DiningLocation.from_html(loc) for loc in dining_locations_html]
+
+	except AttributeError as e:
+		print("Could not find data. Try deleting the cookies file")
+		print(e)
+		sys.exit(1)
 
 	if args.createdb:
 		mapper_registry.metadata.create_all(engine)
