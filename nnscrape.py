@@ -87,9 +87,12 @@ if __name__ == '__main__':
 					if db_item != item:
 						if items_processed >= PROCESSING_BATCH_SIZE and batched:
 							dbsession.commit()
-						if db_item.nutrition_label == item.nutrition:
+						
+						# this is just a best effort check to put *something* in the database. since updating it later would require fetching everything from scratch, which is temporally expensive
+						if db_item.nutrition_label is None:
 							nut = item.get_nutrition_info(session=session)
-							get_or_create(dbsession, NutritionLabel, nut.nutrition_label_id, nut, debug=args.debug, batched=batched)
+							db_item.nutrition_label = nut
+
 						if item.label_names != [i.name for i in db_item.labels]:
 							db_item.labels = [find_or_create(dbsession, ItemLabel, ItemLabel(None, i), name=i) for i in item.label_names]
 						
