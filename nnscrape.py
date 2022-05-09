@@ -41,6 +41,8 @@ if __name__ == '__main__':
 			# if len(contents) > 0:
 			session.cookies.update(pickle.load(c))
 
+	scraper = Scraper(session=session, cachedir=Path("./cache"))
+
 	homepage = scraper.get(NN_BASE_URL)
 
 	with open(COOKIES_FILE, 'wb') as c:
