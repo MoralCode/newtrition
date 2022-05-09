@@ -6,6 +6,7 @@ from pathlib import Path
 from netnutrition import DiningLocation, DiningMenu, DiningMenuItem, NutritionLabel, Ingredient, Allergen, ItemLabel
 from constants import NN_BASE_URL, COOKIES_FILE, PROCESSING_BATCH_SIZE
 from helpers import goback, find_or_create, get_or_create
+from scraper import Scraper
 import csv, sys
 import argparse
 
@@ -40,7 +41,7 @@ if __name__ == '__main__':
 			# if len(contents) > 0:
 			session.cookies.update(pickle.load(c))
 
-	homepage = session.get(NN_BASE_URL)
+	homepage = scraper.get(NN_BASE_URL, session=session, cache_location=Path("./cache"))
 
 	with open(COOKIES_FILE, 'wb') as c:
 		pickle.dump(session.cookies, c)
