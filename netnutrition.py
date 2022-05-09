@@ -47,8 +47,12 @@ class DiningLocation:
 			headers=JSON_HEADERS)
 		menu_html = html_from_json_panel(menu_response.json(),"menuPanel")
 		menu_list_html = BeautifulSoup(menu_html, 'html.parser') 
-		menu_list_items = menu_list_html.find(id="cbo_nn_menuDataList").find(class_="row").children
-		self._menus = [DiningMenu.from_html(html, for_location=self) for html in menu_list_items]
+		try:
+			menu_list_items = menu_list_html.find(id="cbo_nn_menuDataList").find(class_="row").children
+			self._menus = [DiningMenu.from_html(html, for_location=self) for html in menu_list_items]
+		except AttributeError:
+			# there may be no menus
+			self._menus = []
 		return self._menus
 
 	@classmethod
