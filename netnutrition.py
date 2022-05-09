@@ -38,6 +38,11 @@ class DiningLocation:
 	location_id: int
 
 	def get_menus(self, session=requests):
+		"""get menus for this location 
+
+		Args:
+			session (_type_, optional): the object to use for making the request. has a compatible API with python requests. Defaults to using python requests.
+		"""
 		if self._menus is not None:
 			return self._menus
 		
